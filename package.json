@@ -39,6 +39,7 @@
     "start": "node bin/tex-packer.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "prepare": "npm run build",
     "pack:dry": "pnpm build && npm pack --dry-run",
     "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build && npm pack --dry-run",
     "release:check": "pnpm typecheck && pnpm test && pnpm build && pnpm pack:dry",
