@@ -1,13 +1,13 @@
 {
   "name": "@tex-packer-cli/skill-wrapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "bin": {
     "tex-packer": "bin/tex-packer.js"
   },
   "dependencies": {
-    "tex-packer-cli": "0.1.0"
+    "tex-packer-cli": "0.1.1"
   },
   "packageManager": "pnpm@10.16.1"
 }

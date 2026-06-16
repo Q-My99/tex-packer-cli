@@ -22,6 +22,12 @@ npm install -g tex-packer-cli
 tex-packer doctor
 ```
 
+If your package manager warns that `sharp` build scripts were ignored, the
+install may still finish successfully. Run `tex-packer doctor --json`; if the
+`sharp` check fails, approve build scripts with your package manager
+(`npm approve-scripts sharp` or `pnpm approve-builds`) and then reinstall or
+rebuild the package.
+
 Use without installing:
 
 ```bash
@@ -40,6 +46,20 @@ Pack to a ZIP:
 
 ```bash
 tex-packer pack --input ./sprites --output ./atlas.zip --exporter "Phaser 3"
+```
+
+Pack a fixed 4096x4096 atlas without rotation or transparent-edge trimming:
+
+```bash
+tex-packer pack \
+  --input ./sprites \
+  --output ./atlas-4096 \
+  --texture-name sprites_4096 \
+  --width 4096 \
+  --height 4096 \
+  --fixed-size \
+  --no-allow-rotation \
+  --no-allow-trim
 ```
 
 Split an atlas:
@@ -136,6 +156,10 @@ npm login
 pnpm release:npm
 ```
 
+`release:npm` runs `release:check` first and then publishes with npm lifecycle
+scripts disabled for that publish call, so the dry-run build is not repeated.
+Direct `npm publish` is still guarded by `prepublishOnly`.
+
 4. Verify published package:
 
 ```bash
@@ -146,10 +170,34 @@ npx tex-packer-cli skill install --target codex
 5. Tag and publish a GitHub release:
 
 ```bash
-git tag v0.1.0
+git tag v0.1.1
 git push origin main --tags
-gh release create v0.1.0 --title "v0.1.0" --notes "Initial public release."
+gh release create v0.1.1 --title "v0.1.1" --notes "Release v0.1.1."
 ```
+
+## GitHub Actions npm Publishing Plan
+
+This package can be published from GitHub Actions later, but this release is
+still intended to be published manually.
+
+Recommended path:
+
+1. Add a CI workflow that runs `pnpm install --frozen-lockfile`,
+   `pnpm typecheck`, `pnpm test`, and `pnpm pack:dry` on pull requests and
+   pushes.
+2. Configure npm Trusted Publishing for this package and the GitHub workflow
+   path, then publish from a tag or GitHub Release workflow with
+   `permissions: { id-token: write, contents: read }`.
+3. In the publish workflow, use the npm registry URL, enable Corepack, install
+   with pnpm, run `pnpm release:check`, then run
+   `npm publish --access public`.
+4. Only use an `NPM_TOKEN` secret as a fallback when Trusted Publishing is not
+   available. That token must be a granular access token with publish
+   permission and bypass 2FA enabled.
+
+References: [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/),
+[npm 2FA publishing requirements](https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/),
+and [GitHub's Node.js Actions guide](https://docs.github.com/actions/guides/building-and-testing-nodejs).
 
 ## Acknowledgements
 

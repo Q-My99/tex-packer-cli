@@ -6,6 +6,12 @@
 tex-packer pack --input ./sprites --output ./atlas --exporter "JSON (hash)"
 ```
 
+Fixed-size animation atlas without rotation or transparent-edge trimming:
+
+```bash
+tex-packer pack --input ./sprites --output ./atlas-4096 --texture-name sprites_4096 --width 4096 --height 4096 --fixed-size --no-allow-rotation --no-allow-trim
+```
+
 Useful options:
 
 - `--texture-name <name>`

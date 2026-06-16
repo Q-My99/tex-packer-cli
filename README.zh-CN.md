@@ -22,6 +22,11 @@ npm install -g tex-packer-cli
 tex-packer doctor
 ```
 
+如果包管理器提示 `sharp` 的构建脚本被忽略，安装命令本身可能仍然成功。
+请运行 `tex-packer doctor --json` 确认；如果 `sharp` 检查失败，先用包管理器
+批准构建脚本（`npm approve-scripts sharp` 或 `pnpm approve-builds`），然后重新安装
+或 rebuild 这个包。
+
 不安装直接使用：
 
 ```bash
@@ -40,6 +45,20 @@ tex-packer pack --input ./sprites --output ./atlas
 
 ```bash
 tex-packer pack --input ./sprites --output ./atlas.zip --exporter "Phaser 3"
+```
+
+打包固定 4096x4096 图集，并禁止旋转、保留透明边缘：
+
+```bash
+tex-packer pack \
+  --input ./sprites \
+  --output ./atlas-4096 \
+  --texture-name sprites_4096 \
+  --width 4096 \
+  --height 4096 \
+  --fixed-size \
+  --no-allow-rotation \
+  --no-allow-trim
 ```
 
 拆图：
@@ -136,6 +155,10 @@ npm login
 pnpm release:npm
 ```
 
+`release:npm` 会先运行 `release:check`，然后在这次 publish 调用里禁用 npm
+lifecycle scripts，避免 dry-run 的构建被重复执行。直接运行 `npm publish` 时仍然
+会被 `prepublishOnly` 保护。
+
 4. 验证发布后的包：
 
 ```bash
@@ -146,10 +169,31 @@ npx tex-packer-cli skill install --target codex
 5. 创建 GitHub tag 和 Release：
 
 ```bash
-git tag v0.1.0
+git tag v0.1.1
 git push origin main --tags
-gh release create v0.1.0 --title "v0.1.0" --notes "Initial public release."
+gh release create v0.1.1 --title "v0.1.1" --notes "Release v0.1.1."
 ```
+
+## GitHub Actions npm 发布规划
+
+这个包后续可以通过 GitHub Actions 发布到 npm，但当前版本仍然按手动发布处理。
+
+推荐路径：
+
+1. 先添加 CI workflow，在 pull request 和 push 时运行
+   `pnpm install --frozen-lockfile`、`pnpm typecheck`、`pnpm test` 和
+   `pnpm pack:dry`。
+2. 在 npm 包设置里为这个包配置 Trusted Publishing，绑定 GitHub 仓库和 workflow
+   路径；发布 workflow 从 tag 或 GitHub Release 触发，并设置
+   `permissions: { id-token: write, contents: read }`。
+3. 发布 workflow 中使用 npm registry URL，启用 Corepack，用 pnpm 安装依赖，运行
+   `pnpm release:check`，最后执行 `npm publish --access public`。
+4. 只有 Trusted Publishing 不可用时才使用 `NPM_TOKEN` secret 作为兜底。这个 token
+   必须是有发布权限、并启用 bypass 2FA 的 granular access token。
+
+参考：[npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)、
+[npm 2FA 发布要求](https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/)、
+[GitHub Node.js Actions 指南](https://docs.github.com/actions/guides/building-and-testing-nodejs)。
 
 ## 鸣谢
 

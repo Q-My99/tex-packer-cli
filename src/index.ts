@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { Command } from "commander";
-import { DEFAULT_OPTIONS, EXPORTERS, FILTERS, PACKERS, SPLITTERS } from "./constants.js";
+import { APP_INFO, DEFAULT_OPTIONS, EXPORTERS, FILTERS, PACKERS, SPLITTERS } from "./constants.js";
 import { saveProject } from "./core/project.js";
 import { splitAtlas } from "./core/splitter.js";
 import { installSkill, type SkillTarget } from "./skill/install.js";
@@ -14,7 +14,7 @@ const program = new Command();
 program
   .name("tex-packer")
   .description("AI-friendly texture atlas packer, splitter, and agent skill installer.")
-  .version("0.1.0");
+  .version(APP_INFO.version);
 
 program.command("list")
   .description("List commands, exporters, packers, splitters, filters, or default options.")
@@ -69,7 +69,7 @@ skill.command("install")
   .action(async (cmd) => print({ installed: await installSkill({ target: cmd.target as SkillTarget, dest: cmd.dest, dryRun: cmd.dryRun, noDeps: cmd.deps === false }) }, true));
 
 program.command("doctor")
-  .description("Check runtime, package paths, templates, and bundled skill.")
+  .description("Check runtime dependencies, package paths, templates, and bundled skill.")
   .option("--json", "print JSON")
   .action(async (cmd) => print(await doctor(), !!cmd.json));
 

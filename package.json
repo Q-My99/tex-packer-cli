@@ -1,6 +1,6 @@
 {
   "name": "tex-packer-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI-friendly texture atlas packer and splitter CLI with one-command agent skill installation.",
   "type": "module",
   "license": "MIT",
@@ -39,11 +39,11 @@
     "start": "node bin/tex-packer.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "prepare": "npm run build",
-    "pack:dry": "pnpm build && npm pack --dry-run",
-    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build && npm pack --dry-run",
-    "release:check": "pnpm typecheck && pnpm test && pnpm build && pnpm pack:dry",
-    "release:npm": "pnpm release:check && npm publish --access public",
+    "prepack": "pnpm build",
+    "pack:dry": "npm pack --dry-run",
+    "prepublishOnly": "pnpm typecheck && pnpm test",
+    "release:check": "pnpm typecheck && pnpm test && pnpm pack:dry",
+    "release:npm": "pnpm release:check && npm publish --access public --ignore-scripts",
     "skill:install": "node bin/tex-packer.js skill install --target codex"
   },
   "keywords": [
@@ -62,7 +62,8 @@
     "node": ">=20"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
     "@jvitela/mustache-wax": "^1.0.4",

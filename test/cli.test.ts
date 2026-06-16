@@ -14,6 +14,13 @@ describe("tex-packer CLI", () => {
     expect(res.stdout).toContain("skill install");
   });
 
+  it("checks sharp in doctor output", () => {
+    const res = runDev("doctor", "--json");
+    const report = JSON.parse(res.stdout);
+    expect(report.ok).toBe(true);
+    expect(report.checks.some((check: { name: string }) => check.name === "sharp")).toBe(true);
+  });
+
   it("packs sprites and splits the generated atlas", async () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "tex-packer-cli-"));
     const sprites = path.join(tmp, "sprites");
