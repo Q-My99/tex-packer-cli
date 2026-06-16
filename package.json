@@ -1,0 +1,88 @@
+{
+  "name": "tex-packer-cli",
+  "version": "0.1.0",
+  "description": "AI-friendly texture atlas packer and splitter CLI with one-command agent skill installation.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Q-My99",
+  "homepage": "https://github.com/Q-My99/tex-packer-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Q-My99/tex-packer-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Q-My99/tex-packer-cli/issues"
+  },
+  "bin": {
+    "tex-packer": "bin/tex-packer.js",
+    "tex-packer-cli": "bin/tex-packer.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "assets/templates",
+    "skills",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE",
+    "NOTICE.md",
+    "cli-manifest.json",
+    "llms.txt"
+  ],
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "dev:bun": "bun src/index.ts",
+    "build": "vite build && node -e \"require('fs').chmodSync('bin/tex-packer.js', 0o755)\"",
+    "start": "node bin/tex-packer.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "pack:dry": "pnpm build && npm pack --dry-run",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build && npm pack --dry-run",
+    "release:check": "pnpm typecheck && pnpm test && pnpm build && pnpm pack:dry",
+    "release:npm": "pnpm release:check && npm publish --access public",
+    "skill:install": "node bin/tex-packer.js skill install --target codex"
+  },
+  "keywords": [
+    "texture",
+    "atlas",
+    "spritesheet",
+    "sprite",
+    "cli",
+    "npx",
+    "agent-skill",
+    "codex",
+    "claude-code",
+    "openclaw"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@jvitela/mustache-wax": "^1.0.4",
+    "commander": "^12.1.0",
+    "jszip": "^3.10.1",
+    "maxrects-packer": "^2.7.3",
+    "mustache": "^4.2.0",
+    "plist": "^3.1.1",
+    "sharp": "^0.33.5",
+    "tinify": "^1.8.2",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "@types/mustache": "^4.2.6",
+    "@types/node": "^24.10.1",
+    "@types/plist": "^3.0.5",
+    "@types/xml2js": "^0.4.14",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vitest": "^4.0.15"
+  },
+  "packageManager": "pnpm@10.16.1"
+}

@@ -1,0 +1,35 @@
+{
+  "name": "tex-packer-cli",
+  "bin": "tex-packer",
+  "description": "AI-friendly texture atlas packer and splitter CLI.",
+  "commands": [
+    {
+      "name": "pack",
+      "description": "Pack images, folders, ZIPs, or .ftpp projects into atlas image plus metadata."
+    },
+    {
+      "name": "split",
+      "description": "Split an atlas texture back into individual sprite images."
+    },
+    {
+      "name": "inspect",
+      "description": "Inspect images, metadata, project files, or ZIPs."
+    },
+    {
+      "name": "list",
+      "description": "List exporters, splitters, filters, packers, options, or commands."
+    },
+    {
+      "name": "project init",
+      "description": "Create a reusable .ftpp project file."
+    },
+    {
+      "name": "skill install",
+      "description": "Install the bundled agent skill into Codex, Claude Code, OpenClaw, or a custom path."
+    },
+    {
+      "name": "doctor",
+      "description": "Check runtime dependencies, package paths, and bundled assets."
+    }
+  ]
+}

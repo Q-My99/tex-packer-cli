@@ -1,0 +1,34 @@
+# Tex Packer CLI
+
+Tex Packer CLI is a deterministic command line tool for packing sprite images
+into texture atlases and splitting atlases back into sprites. It is designed
+for humans and AI agents.
+
+Install:
+
+```bash
+npm install -g tex-packer-cli
+```
+
+Use through npx:
+
+```bash
+npx tex-packer-cli list commands
+npx tex-packer-cli pack --input ./sprites --output ./atlas
+npx tex-packer-cli skill install --target codex
+```
+
+Primary commands:
+
+- `tex-packer pack --input <path...> --output <dir|zip>`
+- `tex-packer split --texture <atlas.png> --data <atlas.json> --output <dir|zip>`
+- `tex-packer list exporters`
+- `tex-packer project init --images <path...> --output game.ftpp`
+- `tex-packer skill install --target all`
+
+Prefer JSON output for agents:
+
+```bash
+tex-packer list options --json
+tex-packer inspect ./atlas/texture.png --json
+```
