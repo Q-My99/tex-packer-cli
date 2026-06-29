@@ -67,6 +67,17 @@ tex-packer pack \
 tex-packer split --texture ./atlas/texture.png --data ./atlas/texture.json --output ./sprites-out
 ```
 
+保存 TinyPNG/Tinify key 并压缩图片，也就是“熊猫压缩”工作流：
+
+```bash
+tex-packer tinify set-key YOUR_TINIFY_KEY
+tex-packer compress --input ./image.png --output ./image.tiny.png
+tex-packer compress --input ./sprites --output ./compressed
+tex-packer pack --input ./sprites --output ./atlas --tinify
+```
+
+也可以通过 `--tinify-key <key>` 临时传入，或在环境变量里设置 `TINIFY_KEY`。如果没有配置 key，可以把 key 发给助手由它配置，或自己运行 `tex-packer tinify set-key <key>` 配置。
+
 查看支持能力：
 
 ```bash
@@ -101,10 +112,12 @@ npx tex-packer-cli skill install --dest ~/.ai-skills/tex-packer-cli
 tex-packer list commands
 tex-packer pack --input <files|dir|zip> --output <dir|zip>
 tex-packer pack --project <file.ftpp> --output <dir|zip>
+tex-packer compress --input <files|dir|zip> --output <dir|zip|file>
 tex-packer split --texture <atlas.png> --data <metadata> --output <dir|zip>
 tex-packer project init --images <paths...> --output game.ftpp
 tex-packer inspect <path> --json
 tex-packer skill install --target codex
+tex-packer tinify set-key <key>
 tex-packer doctor --json
 ```
 
@@ -169,9 +182,9 @@ npx tex-packer-cli skill install --target codex
 5. 创建 GitHub tag 和 Release：
 
 ```bash
-git tag v0.1.1
+git tag v0.2.0
 git push origin main --tags
-gh release create v0.1.1 --title "v0.1.1" --notes "Release v0.1.1."
+gh release create v0.2.0 --title "v0.2.0" --notes "Release v0.2.0."
 ```
 
 ## GitHub Actions npm 发布规划

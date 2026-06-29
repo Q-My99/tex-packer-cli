@@ -68,6 +68,17 @@ Split an atlas:
 tex-packer split --texture ./atlas/texture.png --data ./atlas/texture.json --output ./sprites-out
 ```
 
+Save a TinyPNG/Tinify key and compress images. This is also the "熊猫压缩" workflow:
+
+```bash
+tex-packer tinify set-key YOUR_TINIFY_KEY
+tex-packer compress --input ./image.png --output ./image.tiny.png
+tex-packer compress --input ./sprites --output ./compressed
+tex-packer pack --input ./sprites --output ./atlas --tinify
+```
+
+You can also pass `--tinify-key <key>` or set `TINIFY_KEY` in the environment. If no key is configured, provide the key to your assistant so they can configure it, or run `tex-packer tinify set-key <key>` yourself.
+
 Inspect available formats:
 
 ```bash
@@ -102,10 +113,12 @@ npx tex-packer-cli skill install --dest ~/.ai-skills/tex-packer-cli
 tex-packer list commands
 tex-packer pack --input <files|dir|zip> --output <dir|zip>
 tex-packer pack --project <file.ftpp> --output <dir|zip>
+tex-packer compress --input <files|dir|zip> --output <dir|zip|file>
 tex-packer split --texture <atlas.png> --data <metadata> --output <dir|zip>
 tex-packer project init --images <paths...> --output game.ftpp
 tex-packer inspect <path> --json
 tex-packer skill install --target codex
+tex-packer tinify set-key <key>
 tex-packer doctor --json
 ```
 
@@ -170,9 +183,9 @@ npx tex-packer-cli skill install --target codex
 5. Tag and publish a GitHub release:
 
 ```bash
-git tag v0.1.1
+git tag v0.2.0
 git push origin main --tags
-gh release create v0.1.1 --title "v0.1.1" --notes "Release v0.1.1."
+gh release create v0.2.0 --title "v0.2.0" --notes "Release v0.2.0."
 ```
 
 ## GitHub Actions npm Publishing Plan

@@ -11,7 +11,22 @@ describe("tex-packer CLI", () => {
   it("lists commands in dev mode", () => {
     const res = runDev("list", "commands");
     expect(res.stdout).toContain("pack");
+    expect(res.stdout).toContain("compress");
     expect(res.stdout).toContain("skill install");
+    expect(res.stdout).toContain("tinify set-key");
+  });
+
+  it("mentions image compression keywords in help", () => {
+    const rootHelp = runDev("--help").stdout;
+    const packHelp = runDev("pack", "--help").stdout;
+    const compressHelp = runDev("compress", "--help").stdout;
+    const tinifyHelp = runDev("tinify", "--help").stdout;
+    const combined = `${rootHelp}\n${packHelp}\n${compressHelp}\n${tinifyHelp}`;
+
+    expect(combined).toContain("compress");
+    expect(combined).toContain("TinyPNG");
+    expect(combined).toContain("Tinify");
+    expect(combined).toContain("熊猫压缩");
   });
 
   it("checks sharp in doctor output", () => {
@@ -19,6 +34,18 @@ describe("tex-packer CLI", () => {
     const report = JSON.parse(res.stdout);
     expect(report.ok).toBe(true);
     expect(report.checks.some((check: { name: string }) => check.name === "sharp")).toBe(true);
+  });
+
+  it("saves a TinyPNG key without printing it", async () => {
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "tex-packer-cli-"));
+    const config = path.join(tmp, "config.json");
+
+    const res = runDevEnv({ TEX_PACKER_CONFIG_FILE: config }, "tinify", "set-key", "test-secret-key");
+    const saved = JSON.parse(await fs.readFile(config, "utf8"));
+
+    expect(JSON.parse(res.stdout)).toEqual({ path: config, saved: true });
+    expect(res.stdout).not.toContain("test-secret-key");
+    expect(saved.tinifyKey).toBe("test-secret-key");
   });
 
   it("packs sprites and splits the generated atlas", async () => {
@@ -48,7 +75,11 @@ describe("tex-packer CLI", () => {
 });
 
 function runDev(...args: string[]) {
-  const res = spawnSync("pnpm", ["tsx", "src/index.ts", ...args], { cwd: root, encoding: "utf8" });
+  return runDevEnv({}, ...args);
+}
+
+function runDevEnv(env: NodeJS.ProcessEnv, ...args: string[]) {
+  const res = spawnSync("pnpm", ["tsx", "src/index.ts", ...args], { cwd: root, encoding: "utf8", env: { ...process.env, ...env } });
   if (res.status !== 0) throw new Error(`${res.stderr}\n${res.stdout}`);
   return res;
 }

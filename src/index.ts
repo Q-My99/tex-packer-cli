@@ -7,13 +7,15 @@ import { saveProject } from "./core/project.js";
 import { splitAtlas } from "./core/splitter.js";
 import { installSkill, type SkillTarget } from "./skill/install.js";
 import { packCommand, optionsFrom } from "./commands/pack.js";
+import { compressCommand } from "./commands/compress.js";
 import { doctor } from "./commands/doctor.js";
+import { saveTinifyKey } from "./core/tinify.js";
 
 const program = new Command();
 
 program
   .name("tex-packer")
-  .description("AI-friendly texture atlas packer, splitter, and agent skill installer.")
+  .description("AI-friendly texture atlas packer, splitter, and TinyPNG/Tinify (熊猫压缩) image compressor.")
   .version(APP_INFO.version);
 
 program.command("list")
@@ -29,6 +31,13 @@ addPackOptions(
     .option("--project <file>", "load a Free Texture Packer .ftpp project")
     .requiredOption("--output <dir|zip>", "output directory or ZIP file")
 ).action(async (cmd) => print(await packCommand(cmd), true));
+
+program.command("compress")
+  .description("Compress one or more images with TinyPNG/Tinify (熊猫压缩).")
+  .requiredOption("--input <path...>", "image files, folders, or ZIP files")
+  .requiredOption("--output <dir|zip|file>", "output directory, ZIP file, or single image file")
+  .option("--tinify-key <key>", "TinyPNG/Tinify API key")
+  .action(async (cmd) => print(await compressCommand(cmd), true));
 
 program.command("split")
   .description("Split an atlas texture back into individual sprite images.")
@@ -67,6 +76,12 @@ skill.command("install")
   .option("--dry-run", "print actions without changing files")
   .option("--no-deps", "copy skill without installing runtime dependencies")
   .action(async (cmd) => print({ installed: await installSkill({ target: cmd.target as SkillTarget, dest: cmd.dest, dryRun: cmd.dryRun, noDeps: cmd.deps === false }) }, true));
+
+const tinify = program.command("tinify").description("Configure TinyPNG/Tinify (熊猫压缩) image compression.");
+tinify.command("set-key")
+  .description("Save a TinyPNG/Tinify API key for future compress and pack --tinify runs.")
+  .argument("<key>", "TinyPNG/Tinify API key")
+  .action(async (key) => print(await saveTinifyKey(key), true));
 
 program.command("doctor")
   .description("Check runtime dependencies, package paths, templates, and bundled skill.")
@@ -107,12 +122,12 @@ function addPackOptions(command: Command): Command {
     .option("--remove-file-extension", "strip sprite name extensions")
     .option("--prepend-folder-name", "keep folder names in metadata")
     .option("--no-prepend-folder-name", "use basename metadata names")
-    .option("--tinify", "compress atlas image with TinyPNG")
-    .option("--tinify-key <key>", "TinyPNG API key");
+    .option("--tinify", "compress atlas image with TinyPNG/Tinify (熊猫压缩)")
+    .option("--tinify-key <key>", "TinyPNG/Tinify API key");
 }
 
 function listKind(kind: string) {
-  if (kind === "commands") return ["pack", "split", "inspect", "list", "project init", "skill install", "doctor"];
+  if (kind === "commands") return ["pack", "compress", "split", "inspect", "list", "project init", "skill install", "tinify set-key", "doctor"];
   if (kind === "exporters") return EXPORTERS.map((item) => item.type);
   if (kind === "packers") return PACKERS;
   if (kind === "splitters") return SPLITTERS;

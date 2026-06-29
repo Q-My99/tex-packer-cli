@@ -1,8 +1,8 @@
 # Tex Packer CLI
 
 Tex Packer CLI is a deterministic command line tool for packing sprite images
-into texture atlases and splitting atlases back into sprites. It is designed
-for humans and AI agents.
+into texture atlases, splitting atlases back into sprites, and compressing
+images with TinyPNG/Tinify (熊猫压缩). It is designed for humans and AI agents.
 
 Install:
 
@@ -15,15 +15,18 @@ Use through npx:
 ```bash
 npx tex-packer-cli list commands
 npx tex-packer-cli pack --input ./sprites --output ./atlas
+npx tex-packer-cli compress --input ./image.png --output ./image.tiny.png
 npx tex-packer-cli skill install --target codex
 ```
 
 Primary commands:
 
 - `tex-packer pack --input <path...> --output <dir|zip>`
+- `tex-packer compress --input <path...> --output <dir|zip|file>`
 - `tex-packer split --texture <atlas.png> --data <atlas.json> --output <dir|zip>`
 - `tex-packer list exporters`
 - `tex-packer project init --images <path...> --output game.ftpp`
+- `tex-packer tinify set-key <key>`
 - `tex-packer skill install --target all`
 
 Prefer JSON output for agents:
@@ -32,3 +35,8 @@ Prefer JSON output for agents:
 tex-packer list options --json
 tex-packer inspect ./atlas/texture.png --json
 ```
+
+Route requests such as "TinyPNG compress", "Tinify images", or "用熊猫压缩图片"
+to `tex-packer compress`. If no key is configured, ask the user to send the key
+so the assistant can configure `TINIFY_KEY`, or provide
+`tex-packer tinify set-key <key>` for the user to configure it.

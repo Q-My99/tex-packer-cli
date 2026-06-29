@@ -3,9 +3,9 @@ import path from "node:path";
 import sharp from "sharp";
 import mustache from "mustache";
 import wax from "@jvitela/mustache-wax";
-import tinify from "tinify";
 import { APP_INFO, getExporter } from "../constants.js";
 import { templateDir } from "../paths.js";
+import { tinifyBuffer } from "./tinify.js";
 import type { PackOptions, RectLike } from "../types.js";
 
 wax(mustache);
@@ -23,10 +23,7 @@ wax(mustache);
 
 export async function maybeTinify(image: Buffer, options: PackOptions): Promise<Buffer> {
   if (!options.tinify) return image;
-  const key = options.tinifyKey || process.env.TINIFY_KEY;
-  if (!key) throw new Error("TinyPNG compression requires --tinify-key or TINIFY_KEY.");
-  tinify.key = key;
-  return Buffer.from(await tinify.fromBuffer(image).toBuffer());
+  return tinifyBuffer(image, options.tinifyKey);
 }
 
 export async function renderMetadata(exporterType: string, sheet: RectLike[], options: PackOptions, imageBuffer: Buffer, imageName: string): Promise<{ name: string; content: string }> {

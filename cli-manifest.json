@@ -1,11 +1,15 @@
 {
   "name": "tex-packer-cli",
   "bin": "tex-packer",
-  "description": "AI-friendly texture atlas packer and splitter CLI.",
+  "description": "AI-friendly texture atlas packer, splitter, and TinyPNG/Tinify (熊猫压缩) image compression CLI.",
   "commands": [
     {
       "name": "pack",
       "description": "Pack images, folders, ZIPs, or .ftpp projects into atlas image plus metadata."
+    },
+    {
+      "name": "compress",
+      "description": "Compress one or more images with TinyPNG/Tinify (熊猫压缩)."
     },
     {
       "name": "split",
@@ -26,6 +30,10 @@
     {
       "name": "skill install",
       "description": "Install the bundled agent skill into Codex, Claude Code, OpenClaw, or a custom path."
+    },
+    {
+      "name": "tinify set-key",
+      "description": "Save a TinyPNG/Tinify API key for future compress and pack --tinify runs."
     },
     {
       "name": "doctor",

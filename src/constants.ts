@@ -2,7 +2,7 @@ import type { ExporterInfo, PackOptions } from "./types.js";
 
 export const APP_INFO = {
   displayName: "Tex Packer CLI",
-  version: "0.1.1",
+  version: "0.2.0",
   url: "https://github.com/Q-My99/tex-packer-cli"
 };
 

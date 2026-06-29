@@ -19,9 +19,9 @@ npx tex-packer-cli skill install --target codex
 Create a GitHub release after npm publish:
 
 ```bash
-git tag v0.1.1
-git push origin v0.1.1
-gh release create v0.1.1 --title "v0.1.1" --notes "Release v0.1.1."
+git tag v0.2.0
+git push origin v0.2.0
+gh release create v0.2.0 --title "v0.2.0" --notes "Release v0.2.0."
 ```
 
 ## GitHub Actions Publishing Plan
