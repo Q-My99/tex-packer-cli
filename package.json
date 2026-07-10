@@ -1,7 +1,7 @@
 {
   "name": "tex-packer-cli",
   "version": "0.2.0",
-  "description": "AI-friendly texture atlas packer, splitter, and image compression CLI with one-command agent skill installation.",
+  "description": "AI-friendly texture atlas packer, splitter, image processing, format conversion, GIF, and compression CLI.",
   "type": "module",
   "license": "MIT",
   "author": "Q-My99",

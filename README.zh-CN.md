@@ -1,12 +1,12 @@
 # Tex Packer CLI
 
-> 面向 AI 的纹理图集打包与拆图 CLI。它既是一个可自解释的命令行工具，也提供一条 `npx` 命令安装 Agent Skill，适配 Codex、Claude Code、OpenClaw 和其他编程助手。
+> 面向 AI 的纹理图集打包、拆图与常用图片处理 CLI。它既是一个可自解释的命令行工具，也提供一条 `npx` 命令安装 Agent Skill，适配 Codex、Claude Code、OpenClaw 和其他编程助手。
 
 [English README](./README.md)
 
 ## 它能做什么
 
-Tex Packer CLI 可以把精灵图打包成游戏可用的纹理图集，也可以把已有图集拆回单张图片。它面向人类和 AI Agent 共同设计：
+Tex Packer CLI 可以把精灵图打包成游戏可用的纹理图集，把已有图集拆回单张图片，也能完成图片缩放、方位剪裁、格式互转、GIF 和压缩工作流。它面向人类和 AI Agent 共同设计：
 
 - 确定性 CLI：不需要浏览器或 GUI。
 - AI 友好发现能力：`list`、`inspect`、`doctor`、`cli-manifest.json`、`llms.txt`。
@@ -78,6 +78,31 @@ tex-packer pack --input ./sprites --output ./atlas --tinify
 
 也可以通过 `--tinify-key <key>` 临时传入，或在环境变量里设置 `TINIFY_KEY`。如果没有配置 key，可以把 key 发给助手由它配置，或自己运行 `tex-packer tinify set-key <key>` 配置。
 
+不放大小图地批量缩放、按方位做纯剪裁，或在保留相对目录结构的同时转换格式：
+
+```bash
+tex-packer image resize --input ./assets --output ./resized --width 512
+tex-packer image crop --input ./photo.png --output ./avatar.png --width 256 --height 256 --position center
+tex-packer image convert --input ./assets --output ./webp --format webp --quality 82
+```
+
+按自然文件名顺序把序列帧合成动画 GIF；这条路径不需要 FFmpeg：
+
+```bash
+tex-packer image gif --input ./frames --output ./animation.gif --fps 12 --loop 0
+```
+
+视频转 GIF 使用可选的系统 FFmpeg，`--start` 和 `--duration` 用于截取片段：
+
+```bash
+tex-packer image gif --video ./clip.mp4 --output ./clip.gif --fps 12 --start 2 --duration 4
+tex-packer doctor --json
+```
+
+格式互转支持 PNG、JPEG、WebP、AVIF 和 GIF。尺寸、适配方式、方位、质量和背景色等完整参数请运行相应子命令的 `--help` 查看。
+
+目录输出会保留输入目录 basename：`--input ./assets --output ./out` 会写入 `./out/assets/`。连续执行多个命令时，下一步应把这个嵌套目录作为 `--input`，避免重复叠加目录层级。
+
 查看支持能力：
 
 ```bash
@@ -113,6 +138,11 @@ tex-packer list commands
 tex-packer pack --input <files|dir|zip> --output <dir|zip>
 tex-packer pack --project <file.ftpp> --output <dir|zip>
 tex-packer compress --input <files|dir|zip> --output <dir|zip|file>
+tex-packer image resize --input <files|dir|zip> --output <dir|zip|file> --width <n>
+tex-packer image crop --input <files|dir|zip> --output <dir|zip|file> --width <n> --height <n>
+tex-packer image convert --input <files|dir|zip> --output <dir|zip|file> --format <png|jpeg|webp|avif|gif>
+tex-packer image gif --input <frames...> --output <file.gif>
+tex-packer image gif --video <file> --output <file.gif>
 tex-packer split --texture <atlas.png> --data <metadata> --output <dir|zip>
 tex-packer project init --images <paths...> --output game.ftpp
 tex-packer inspect <path> --json

@@ -1,8 +1,8 @@
 # Tex Packer CLI
 
-Tex Packer CLI is a deterministic command line tool for packing sprite images
-into texture atlases, splitting atlases back into sprites, and compressing
-images with TinyPNG/Tinify (熊猫压缩). It is designed for humans and AI agents.
+Tex Packer CLI is a deterministic command line tool for packing and splitting
+texture atlases, resizing and cropping images, converting PNG/JPEG/WebP/AVIF/GIF,
+creating animated GIFs, and compressing with TinyPNG/Tinify (熊猫压缩).
 
 Install:
 
@@ -16,6 +16,10 @@ Use through npx:
 npx tex-packer-cli list commands
 npx tex-packer-cli pack --input ./sprites --output ./atlas
 npx tex-packer-cli compress --input ./image.png --output ./image.tiny.png
+npx tex-packer-cli image resize --input ./assets --output ./resized --width 512
+npx tex-packer-cli image crop --input photo.png --output avatar.png --width 256 --height 256 --position center
+npx tex-packer-cli image convert --input ./assets --output ./webp --format webp --quality 82
+npx tex-packer-cli image gif --input ./frames --output animation.gif --fps 12 --loop 0
 npx tex-packer-cli skill install --target codex
 ```
 
@@ -23,6 +27,11 @@ Primary commands:
 
 - `tex-packer pack --input <path...> --output <dir|zip>`
 - `tex-packer compress --input <path...> --output <dir|zip|file>`
+- `tex-packer image resize --input <path...> --output <dir|zip|file> --width <n>`
+- `tex-packer image crop --input <path...> --output <dir|zip|file> --width <n> --height <n>`
+- `tex-packer image convert --input <path...> --output <dir|zip|file> --format <png|jpeg|webp|avif|gif>`
+- `tex-packer image gif --input <frames...> --output <file.gif>`
+- `tex-packer image gif --video <file> --output <file.gif>`
 - `tex-packer split --texture <atlas.png> --data <atlas.json> --output <dir|zip>`
 - `tex-packer list exporters`
 - `tex-packer project init --images <path...> --output game.ftpp`
@@ -33,6 +42,7 @@ Prefer JSON output for agents:
 
 ```bash
 tex-packer list options --json
+tex-packer list image-formats --json
 tex-packer inspect ./atlas/texture.png --json
 ```
 
@@ -40,3 +50,8 @@ Route requests such as "TinyPNG compress", "Tinify images", or "用熊猫压缩�
 to `tex-packer compress`. If no key is configured, ask the user to send the key
 so the assistant can configure `TINIFY_KEY`, or provide
 `tex-packer tinify set-key <key>` for the user to configure it.
+
+Route resize, fixed positional crop, and format conversion to the matching
+`tex-packer image` subcommand. Batch directory and ZIP output preserve relative
+paths. Sequence-frame GIF creation does not require FFmpeg. Video-to-GIF uses
+optional FFmpeg; check it with `tex-packer doctor --json`.

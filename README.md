@@ -1,12 +1,12 @@
 # Tex Packer CLI
 
-> AI-friendly texture atlas packer and splitter. A self-describing CLI plus one-command agent skill installation for Codex, Claude Code, OpenClaw, and other assistants.
+> AI-friendly texture atlas packer, splitter, and image processor. A self-describing CLI plus one-command agent skill installation for Codex, Claude Code, OpenClaw, and other assistants.
 
 [中文文档](./README.zh-CN.md)
 
 ## What It Does
 
-Tex Packer CLI turns sprite images into game-ready texture atlases and can split existing atlases back into sprites. It is designed for both humans and AI agents:
+Tex Packer CLI turns sprite images into game-ready texture atlases, splits atlases back into sprites, and handles common resize, crop, format conversion, GIF, and compression workflows. It is designed for both humans and AI agents:
 
 - Deterministic CLI: no browser or GUI required.
 - AI-friendly discovery: `list`, `inspect`, `doctor`, `cli-manifest.json`, and `llms.txt`.
@@ -79,6 +79,31 @@ tex-packer pack --input ./sprites --output ./atlas --tinify
 
 You can also pass `--tinify-key <key>` or set `TINIFY_KEY` in the environment. If no key is configured, provide the key to your assistant so they can configure it, or run `tex-packer tinify set-key <key>` yourself.
 
+Resize images without enlarging smaller inputs, crop pixels from a positional anchor, or convert a batch while preserving relative paths:
+
+```bash
+tex-packer image resize --input ./assets --output ./resized --width 512
+tex-packer image crop --input ./photo.png --output ./avatar.png --width 256 --height 256 --position center
+tex-packer image convert --input ./assets --output ./webp --format webp --quality 82
+```
+
+Create an animated GIF from naturally sorted sequence frames without FFmpeg:
+
+```bash
+tex-packer image gif --input ./frames --output ./animation.gif --fps 12 --loop 0
+```
+
+Video-to-GIF uses optional FFmpeg. `--start` and `--duration` select a bounded clip:
+
+```bash
+tex-packer image gif --video ./clip.mp4 --output ./clip.gif --fps 12 --start 2 --duration 4
+tex-packer doctor --json
+```
+
+Supported conversion formats are PNG, JPEG, WebP, AVIF, and GIF. Run the relevant subcommand with `--help` for fit, position, size, quality, and background options.
+
+Directory output includes the input directory basename: `--input ./assets --output ./out` writes under `./out/assets/`. When chaining commands, point the next `--input` at that nested directory.
+
 Inspect available formats:
 
 ```bash
@@ -114,6 +139,11 @@ tex-packer list commands
 tex-packer pack --input <files|dir|zip> --output <dir|zip>
 tex-packer pack --project <file.ftpp> --output <dir|zip>
 tex-packer compress --input <files|dir|zip> --output <dir|zip|file>
+tex-packer image resize --input <files|dir|zip> --output <dir|zip|file> --width <n>
+tex-packer image crop --input <files|dir|zip> --output <dir|zip|file> --width <n> --height <n>
+tex-packer image convert --input <files|dir|zip> --output <dir|zip|file> --format <png|jpeg|webp|avif|gif>
+tex-packer image gif --input <frames...> --output <file.gif>
+tex-packer image gif --video <file> --output <file.gif>
 tex-packer split --texture <atlas.png> --data <metadata> --output <dir|zip>
 tex-packer project init --images <paths...> --output game.ftpp
 tex-packer inspect <path> --json

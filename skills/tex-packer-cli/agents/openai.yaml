@@ -1,6 +1,6 @@
 interface:
   display_name: "Tex Packer CLI"
-  short_description: "Pack and split game texture atlases"
-  default_prompt: "Use $tex-packer-cli to pack these sprites into a game-ready texture atlas."
+  short_description: "Pack atlases and process images"
+  default_prompt: "Use $tex-packer-cli to pack sprites, resize or convert images, and create GIFs."
 policy:
   allow_implicit_invocation: true

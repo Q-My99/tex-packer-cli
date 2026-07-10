@@ -2,6 +2,7 @@
   "name": "@tex-packer-cli/skill-wrapper",
   "version": "0.2.0",
   "private": true,
+  "description": "Skill wrapper for tex-packer-cli atlas and image processing commands.",
   "type": "module",
   "bin": {
     "tex-packer": "bin/tex-packer.js"
