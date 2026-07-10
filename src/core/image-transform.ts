@@ -88,7 +88,7 @@ export async function resizeImages(options: ResizeImagesOptions): Promise<ImageC
       width,
       height,
       fit: options.fit,
-      position,
+      position: toSharpPosition(position),
       background: options.background || "#00000000",
       withoutEnlargement: !options.allowUpscale
     });
@@ -231,6 +231,21 @@ function cropOffset(sourceWidth: number, sourceHeight: number, width: number, he
     left: horizontal === "left" ? 0 : horizontal === "right" ? sourceWidth - width : Math.floor((sourceWidth - width) / 2),
     top: vertical === "top" ? 0 : vertical === "bottom" ? sourceHeight - height : Math.floor((sourceHeight - height) / 2)
   };
+}
+
+export function toSharpPosition(position: ImagePosition): string {
+  const positions: Record<ImagePosition, string> = {
+    center: "centre",
+    top: "north",
+    "top-right": "northeast",
+    right: "east",
+    "bottom-right": "southeast",
+    bottom: "south",
+    "bottom-left": "southwest",
+    left: "west",
+    "top-left": "northwest"
+  };
+  return positions[position];
 }
 
 function optionalPositiveInteger(value: number | undefined, name: string): number | undefined {

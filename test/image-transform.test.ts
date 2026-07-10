@@ -24,6 +24,17 @@ describe("static image transforms", () => {
     expect(await sharp(smallOutput).metadata()).toMatchObject({ width: 2, height: 1 });
   });
 
+  it("maps nine-grid positions to Sharp resize gravity", async () => {
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "tex-packer-resize-position-"));
+    const source = path.join(tmp, "source.png");
+    const output = path.join(tmp, "resized.png");
+    await solidImage(source, 4, 4, { r: 255, g: 0, b: 0, alpha: 1 });
+
+    await resizeImages({ input: [source], output, width: 2, height: 2, fit: "cover", position: "top-right" });
+
+    expect(await sharp(output).metadata()).toMatchObject({ width: 2, height: 2 });
+  });
+
   it("crops pixels from the requested positional anchor without scaling", async () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "tex-packer-crop-"));
     const source = path.join(tmp, "source.png");
