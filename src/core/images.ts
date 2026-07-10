@@ -7,27 +7,18 @@ import { IMAGE_EXTENSIONS } from "../constants.js";
 import type { ImageInput } from "../types.js";
 import { normalizeName, smartSort } from "../utils.js";
 
-interface RawImageFile {
+export interface CollectedImage {
   name: string;
   buffer: Buffer;
 }
 
 export async function loadImages(inputs: string[]): Promise<ImageInput[]> {
-  const files: RawImageFile[] = [];
-  for (const input of inputs) files.push(...await collectInput(path.resolve(input)));
-
-  const unique = new Map<string, RawImageFile>();
-  for (const file of files) {
-    const name = uniqueName(unique, normalizeName(file.name));
-    unique.set(name, { ...file, name });
-  }
-
   const images: ImageInput[] = [];
-  for (const [name, file] of [...unique.entries()].sort(([a], [b]) => smartSort(a, b))) {
+  for (const file of await collectImages(inputs)) {
     const meta = await sharp(file.buffer, { animated: false }).ensureAlpha().metadata();
     if (!meta.width || !meta.height) continue;
     images.push({
-      name,
+      name: file.name,
       buffer: file.buffer,
       width: meta.width,
       height: meta.height,
@@ -37,7 +28,20 @@ export async function loadImages(inputs: string[]): Promise<ImageInput[]> {
   return images;
 }
 
-async function collectInput(input: string): Promise<RawImageFile[]> {
+export async function collectImages(inputs: string[]): Promise<CollectedImage[]> {
+  const files: CollectedImage[] = [];
+  for (const input of inputs) files.push(...await collectInput(path.resolve(input)));
+
+  const unique = new Map<string, CollectedImage>();
+  for (const file of files) {
+    const name = uniqueName(unique, normalizeName(file.name));
+    unique.set(name, { ...file, name });
+  }
+
+  return [...unique.values()].sort((a, b) => smartSort(a.name, b.name));
+}
+
+async function collectInput(input: string): Promise<CollectedImage[]> {
   const stat = await fs.stat(input);
   if (stat.isDirectory()) return collectDir(input);
   if (path.extname(input).toLowerCase() === ".zip") return collectZip(input);
@@ -47,9 +51,9 @@ async function collectInput(input: string): Promise<RawImageFile[]> {
   return [];
 }
 
-async function collectDir(dir: string): Promise<RawImageFile[]> {
+async function collectDir(dir: string): Promise<CollectedImage[]> {
   const rootName = path.basename(dir);
-  const results: RawImageFile[] = [];
+  const results: CollectedImage[] = [];
   async function walk(current: string): Promise<void> {
     for (const entry of await fs.readdir(current, { withFileTypes: true })) {
       const full = path.join(current, entry.name);
@@ -64,9 +68,9 @@ async function collectDir(dir: string): Promise<RawImageFile[]> {
   return results;
 }
 
-async function collectZip(input: string): Promise<RawImageFile[]> {
+async function collectZip(input: string): Promise<CollectedImage[]> {
   const zip = await JSZip.loadAsync(await fs.readFile(input));
-  const results: RawImageFile[] = [];
+  const results: CollectedImage[] = [];
   for (const name of Object.keys(zip.files).sort(smartSort)) {
     const file = zip.files[name];
     if (file.dir || name.toUpperCase().includes("__MACOSX")) continue;
@@ -76,7 +80,7 @@ async function collectZip(input: string): Promise<RawImageFile[]> {
   return results;
 }
 
-function uniqueName(map: Map<string, RawImageFile>, name: string): string {
+function uniqueName(map: Map<string, CollectedImage>, name: string): string {
   if (!map.has(name)) return name;
   const ext = path.extname(name);
   const base = name.slice(0, -ext.length);

@@ -36,7 +36,7 @@ export const PACKERS = {
 
 export const SPLITTERS = ["Grid", "JSON (hash)", "JSON (array)", "XML", "UIKit", "Spine"] as const;
 export const FILTERS = ["none", "mask", "grayscale"] as const;
-export const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".gif"]);
+export const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif"]);
 
 export const DEFAULT_OPTIONS: PackOptions = {
   textureName: "texture",
