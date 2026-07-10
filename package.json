@@ -1,6 +1,6 @@
 {
   "name": "tex-packer-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "AI-friendly texture atlas packer, splitter, image processing, format conversion, GIF, and compression CLI.",
   "type": "module",
   "license": "MIT",
