@@ -12,8 +12,48 @@ describe("tex-packer CLI", () => {
     const res = runDev("list", "commands");
     expect(res.stdout).toContain("pack");
     expect(res.stdout).toContain("compress");
+    expect(res.stdout).toContain("image resize");
+    expect(res.stdout).toContain("image crop");
+    expect(res.stdout).toContain("image convert");
+    expect(res.stdout).toContain("image gif");
     expect(res.stdout).toContain("skill install");
     expect(res.stdout).toContain("tinify set-key");
+  });
+
+  it("describes image formats and every image subcommand", async () => {
+    expect(JSON.parse(runDev("list", "image-formats", "--json").stdout)).toEqual(["png", "jpeg", "webp", "avif", "gif"]);
+
+    const rootHelp = runDev("--help").stdout;
+    const resizeHelp = runDev("image", "resize", "--help").stdout;
+    const cropHelp = runDev("image", "crop", "--help").stdout;
+    const convertHelp = runDev("image", "convert", "--help").stdout;
+    const gifHelp = runDev("image", "gif", "--help").stdout;
+    expect(rootHelp).toContain("image");
+    expect(resizeHelp).toContain("--allow-upscale");
+    expect(resizeHelp).toContain("Examples:");
+    expect(cropHelp).toContain("--position");
+    expect(cropHelp).toContain("Examples:");
+    expect(convertHelp).toContain("png|jpeg|webp|avif|gif");
+    expect(convertHelp).toContain("--quality");
+    expect(gifHelp).toContain("--video");
+    expect(gifHelp).toContain("--duration");
+    expect(gifHelp).toContain("FFmpeg");
+
+    const manifest = JSON.parse(await fs.readFile(path.join(root, "cli-manifest.json"), "utf8"));
+    for (const name of ["image resize", "image crop", "image convert", "image gif"]) {
+      expect(manifest.commands.find((command: { name: string; usage?: string }) => command.name === name)?.usage).toContain("tex-packer image");
+    }
+  });
+
+  it("requires exactly one GIF source mode", () => {
+    const output = path.join(os.tmpdir(), "animation.gif");
+    const missing = runDevRaw("image", "gif", "--output", output);
+    const conflicting = runDevRaw("image", "gif", "--input", "frames", "--video", "clip.mp4", "--output", output);
+
+    expect(missing.status).not.toBe(0);
+    expect(`${missing.stderr}\n${missing.stdout}`).toContain("exactly one of --input or --video");
+    expect(conflicting.status).not.toBe(0);
+    expect(`${conflicting.stderr}\n${conflicting.stdout}`).toContain("exactly one of --input or --video");
   });
 
   it("mentions image compression keywords in help", () => {
@@ -80,9 +120,17 @@ function runDev(...args: string[]) {
 }
 
 function runDevEnv(env: NodeJS.ProcessEnv, ...args: string[]) {
-  const res = spawnSync("pnpm", ["tsx", "src/index.ts", ...args], { cwd: root, encoding: "utf8", env: { ...process.env, ...env } });
+  const res = runDevRawEnv(env, ...args);
   if (res.status !== 0) throw new Error(`${res.stderr}\n${res.stdout}`);
   return res;
+}
+
+function runDevRaw(...args: string[]) {
+  return runDevRawEnv({}, ...args);
+}
+
+function runDevRawEnv(env: NodeJS.ProcessEnv, ...args: string[]) {
+  return spawnSync("pnpm", ["tsx", "src/index.ts", ...args], { cwd: root, encoding: "utf8", env: { ...process.env, ...env } });
 }
 
 async function exists(file: string): Promise<boolean> {

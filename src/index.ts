@@ -10,17 +10,19 @@ import { packCommand, optionsFrom } from "./commands/pack.js";
 import { compressCommand } from "./commands/compress.js";
 import { doctor } from "./commands/doctor.js";
 import { saveTinifyKey } from "./core/tinify.js";
+import { addImageCommands } from "./commands/image.js";
+import { IMAGE_FORMATS } from "./core/image-transform.js";
 
 const program = new Command();
 
 program
   .name("tex-packer")
-  .description("AI-friendly texture atlas packer, splitter, and TinyPNG/Tinify (熊猫压缩) image compressor.")
+  .description("AI-friendly texture atlas packer, splitter, compressor, and common image processor.")
   .version(APP_INFO.version);
 
 program.command("list")
-  .description("List commands, exporters, packers, splitters, filters, or default options.")
-  .argument("<kind>", "commands|exporters|packers|splitters|filters|options")
+  .description("List commands, image formats, exporters, packers, splitters, filters, or default options.")
+  .argument("<kind>", "commands|image-formats|exporters|packers|splitters|filters|options")
   .option("--json", "print JSON")
   .action((kind, cmd) => print(listKind(kind), cmd.json));
 
@@ -38,6 +40,8 @@ program.command("compress")
   .requiredOption("--output <dir|zip|file>", "output directory, ZIP file, or single image file")
   .option("--tinify-key <key>", "TinyPNG/Tinify API key")
   .action(async (cmd) => print(await compressCommand(cmd), true));
+
+addImageCommands(program);
 
 program.command("split")
   .description("Split an atlas texture back into individual sprite images.")
@@ -127,7 +131,8 @@ function addPackOptions(command: Command): Command {
 }
 
 function listKind(kind: string) {
-  if (kind === "commands") return ["pack", "compress", "split", "inspect", "list", "project init", "skill install", "tinify set-key", "doctor"];
+  if (kind === "commands") return ["pack", "compress", "image resize", "image crop", "image convert", "image gif", "split", "inspect", "list", "project init", "skill install", "tinify set-key", "doctor"];
+  if (kind === "image-formats") return [...IMAGE_FORMATS];
   if (kind === "exporters") return EXPORTERS.map((item) => item.type);
   if (kind === "packers") return PACKERS;
   if (kind === "splitters") return SPLITTERS;

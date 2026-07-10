@@ -5,6 +5,7 @@ const external = [
   "commander",
   "jszip",
   "maxrects-packer",
+  "modern-gif",
   "mustache",
   "node:child_process",
   "node:crypto",

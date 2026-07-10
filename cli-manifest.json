@@ -12,6 +12,26 @@
       "description": "Compress one or more images with TinyPNG/Tinify (熊猫压缩)."
     },
     {
+      "name": "image resize",
+      "description": "Resize images, folders, or ZIPs with common fit and position controls.",
+      "usage": "tex-packer image resize --input <path...> --output <dir|zip|file> --width <n> [--height <n>]"
+    },
+    {
+      "name": "image crop",
+      "description": "Crop a fixed-size rectangle from images using a nine-grid position.",
+      "usage": "tex-packer image crop --input <path...> --output <dir|zip|file> --width <n> --height <n> [--position center]"
+    },
+    {
+      "name": "image convert",
+      "description": "Convert images between PNG, JPEG, WebP, AVIF, and GIF.",
+      "usage": "tex-packer image convert --input <path...> --output <dir|zip|file> --format <png|jpeg|webp|avif|gif>"
+    },
+    {
+      "name": "image gif",
+      "description": "Create an animated GIF from ordered image frames or an FFmpeg-decoded video.",
+      "usage": "tex-packer image gif <--input <path...>|--video <file>> --output <file.gif> [--fps 10] [--loop 0]"
+    },
+    {
       "name": "split",
       "description": "Split an atlas texture back into individual sprite images."
     },
