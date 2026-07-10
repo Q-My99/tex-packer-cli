@@ -2,22 +2,25 @@ import path from "node:path";
 import sharp from "sharp";
 import { pathExists } from "../utils.js";
 import { bundledSkillDir, packageRoot, templateDir } from "../paths.js";
+import { checkFfmpeg } from "../core/ffmpeg.js";
 
-interface DoctorCheck {
+export interface DoctorCheck {
   name: string;
   ok: boolean;
+  optional?: boolean;
   detail: string;
 }
 
 export async function doctor(): Promise<{ ok: boolean; checks: DoctorCheck[] }> {
-  const checks = [
+  const checks: DoctorCheck[] = [
     { name: "node", ok: Number(process.versions.node.split(".")[0]) >= 20, detail: process.versions.node },
     { name: "package-root", ok: await pathExists(packageRoot()), detail: packageRoot() },
     await checkSharp(),
+    checkFfmpeg(),
     { name: "templates", ok: await pathExists(path.join(templateDir(), "JsonHash.mst")), detail: templateDir() },
     { name: "skill", ok: await pathExists(path.join(bundledSkillDir(), "SKILL.md")), detail: bundledSkillDir() }
   ];
-  return { ok: checks.every((check) => check.ok), checks };
+  return { ok: checks.every((check) => check.optional || check.ok), checks };
 }
 
 async function checkSharp(): Promise<DoctorCheck> {

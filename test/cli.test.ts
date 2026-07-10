@@ -34,6 +34,7 @@ describe("tex-packer CLI", () => {
     const report = JSON.parse(res.stdout);
     expect(report.ok).toBe(true);
     expect(report.checks.some((check: { name: string }) => check.name === "sharp")).toBe(true);
+    expect(report.checks.find((check: { name: string }) => check.name === "ffmpeg")).toMatchObject({ optional: true });
   });
 
   it("saves a TinyPNG key without printing it", async () => {
