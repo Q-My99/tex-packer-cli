@@ -77,6 +77,18 @@ describe("tex-packer CLI", () => {
     expect(report.checks.find((check: { name: string }) => check.name === "ffmpeg")).toMatchObject({ optional: true });
   });
 
+  it("inspects AVIF as an image", async () => {
+    const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "tex-packer-inspect-avif-"));
+    const input = path.join(tmp, "image.avif");
+    await sharp({ create: { width: 3, height: 2, channels: 4, background: { r: 10, g: 20, b: 30, alpha: 1 } } })
+      .avif()
+      .toFile(input);
+
+    const inspected = JSON.parse(runDev("inspect", input, "--json").stdout);
+
+    expect(inspected).toMatchObject({ type: "image", path: input, format: "heif", width: 3, height: 2 });
+  });
+
   it("saves a TinyPNG key without printing it", async () => {
     const tmp = await fs.mkdtemp(path.join(os.tmpdir(), "tex-packer-cli-"));
     const config = path.join(tmp, "config.json");

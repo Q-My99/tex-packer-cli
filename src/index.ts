@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { Command } from "commander";
-import { APP_INFO, DEFAULT_OPTIONS, EXPORTERS, FILTERS, PACKERS, SPLITTERS } from "./constants.js";
+import { APP_INFO, DEFAULT_OPTIONS, EXPORTERS, FILTERS, IMAGE_EXTENSIONS, PACKERS, SPLITTERS } from "./constants.js";
 import { saveProject } from "./core/project.js";
 import { splitAtlas } from "./core/splitter.js";
 import { installSkill, type SkillTarget } from "./skill/install.js";
@@ -144,7 +144,7 @@ function listKind(kind: string) {
 async function inspect(input: string) {
   const file = path.resolve(input);
   const ext = path.extname(file).toLowerCase();
-  if ([".png", ".jpg", ".jpeg", ".gif", ".webp"].includes(ext)) {
+  if (IMAGE_EXTENSIONS.has(ext)) {
     const meta = await sharp(file).metadata();
     return { type: "image", path: file, format: meta.format, width: meta.width, height: meta.height };
   }
